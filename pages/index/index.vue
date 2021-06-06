@@ -11,6 +11,7 @@
 			<swiper-item v-for="(item,index) in newsList" :key="index">
 				<!-- <view class="swiper-item">{{item.name}}</view> -->
 				<scroll-view scroll-y="true" :style="'height:'+scrollH+'px'" @scrolltolower="loadmore(index)">
+					
 					<!-- <view v-for="i in 100" :key="i">{{i}}</view> -->
 					<template v-if="item.list.length>0">
 						<block v-for="(item2,index2) in item.list" :key="index2">
@@ -133,7 +134,7 @@
 		//监听导航栏搜索框
 		onNavigationBarSearchInputClicked(){
 			uni.navigateTo({
-				url:'../search/search'
+				url:'../search/search?type=post'
 			})
 		},
 		
@@ -146,6 +147,7 @@
 		},
 		
 		onLoad() {
+		console.log(this.$C.webUrl)
 			uni.getSystemInfo({
 				success: res => {
 					//console.log(;
@@ -154,6 +156,7 @@
 			})
 			this.getData()
 		},
+		
 		methods: {
 			//
 			getData() {

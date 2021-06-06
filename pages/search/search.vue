@@ -10,7 +10,20 @@
 		<template v-else>
 			<!-- 搜索数据结果列表 -->
 			<block v-for="(item,index) in searchList" :key="index">
+				
+				<!-- 帖子 -->
+				<template v-if="type==='post'">
 				<common-list :item="item" :index="index"></common-list>
+				</template>
+				<!-- 话题 -->
+				<template v-if="type==='topic'">
+				<topic-list :item="item" :index="index"></topic-list>
+				</template>
+				<!-- 用户 -->
+				<template v-if="type==='user'">
+				<user-list :item="item" :index="index"></user-list>
+				</template>
+				
 			</block>
 		</template>
 	</view>
@@ -19,8 +32,57 @@
 
 
 <script>
-	const demo = [
-		{
+	const demoTopic = [{
+					cover: "/static/demo/topicpic/1.jpeg",
+					title: "话题名称",
+					desc: "话题描述",
+					today_count: 0,
+					news_count: 10
+				}, {
+					cover: "/static/demo/topicpic/1.jpeg",
+					title: "话题名称",
+					desc: "话题描述",
+					today_count: 0,
+					news_count: 10
+				}, {
+					cover: "/static/demo/topicpic/1.jpeg",
+					title: "话题名称",
+					desc: "话题描述",
+					today_count: 0,
+					news_count: 10
+				}, {
+					cover: "/static/demo/topicpic/1.jpeg",
+					title: "话题名称",
+					desc: "话题描述",
+					today_count: 0,
+					news_count: 10
+				}, {
+					cover: "/static/demo/topicpic/1.jpeg",
+					title: "话题名称",
+					desc: "话题描述",
+					today_count: 0,
+					news_count: 10
+				}]
+	const demoUser = [{
+					avatar: "/static/default.jpg",
+					username: "用户",
+					sex: 1,
+					age: 24,
+					isFollow: true
+				}, {
+					avatar: "/static/default.jpg",
+					username: "用户",
+					sex: 2,
+					age: 24,
+					isFollow: true
+				}, {
+					avatar: "/static/default.jpg",
+					username: "用户",
+					sex: 1,
+					age: 24,
+					isFollow: false
+				}]
+	const demoPost = [{
 			username: "jack zhou",
 			userpic: "../../static/default.jpg",
 			newstime: "2021-10-20 下午04:30",
@@ -68,15 +130,20 @@
 	]
 
 	import commonList from '@/components/common/common-list.vue'
+	import topicList from '@/components/news/topic-list.vue'
+	import userList from '@/components/user-list/user-list.vue'
 	export default {
 		components: {
-			commonList
+			commonList,
+			topicList,
+			userList
 		},
 		data() {
 			return {
 				searchText: "",
 				list: ['uniapp 第二季实战开发', 'uniapp 第三季微信开发', '实战教程', '理论课程'],
-				searchList: []
+				searchList: [],
+				type: "post"
 			}
 		},
 		// 监听导航输入
@@ -88,6 +155,38 @@
 		onNavigationBarButtonTap(e) {
 			console.log(e);
 			this.searchEvent()
+		},
+
+		onLoad(e) {
+			let pageTitle = ''
+			//console.log(e.type)
+			if (e.type) {
+				this.type = e.type
+			}
+			switch (this.type) {
+				case 'post':
+					pageTitle = '帖子'
+					break;
+				case 'topic':
+					pageTitle = '话题'
+					break;
+				case 'user':
+					pageTitle = '用户'
+					break;
+				default:
+					break;
+			}
+			//动态修改搜查占位
+			// #ifdef APP-PLUS
+			let webview = this.$mp.page.$getAppWebview(); //获取当前窗口实例  
+			webview.setStyle({
+				'titleNView': {
+					"searchInput": { //修改当前窗口search样式  
+						"placeholder": "搜索"+pageTitle,
+					}
+				}
+			})
+			// #endif
 		},
 		methods: {
 			// 点击搜索历史
@@ -104,13 +203,26 @@
 				})
 				//请求搜索
 				setTimeout(() => {
-					this.searchList = demo
+					switch (this.type) {
+						case 'post':
+							this.searchList = demoPost
+							break;
+						case 'topic':
+							this.searchList = demoTopic
+							break;
+						case 'user':
+							this.searchList = demoUser
+							break;
+						default:
+							break;
+					}
 					//隐藏loading
 					uni.hideLoading()
 				}, 2000)
-				
 			}
-		}
+		},
+		
+		
 	}
 </script>
 

@@ -76,7 +76,7 @@
 		// 监听点击搜索
 		onNavigationBarSearchInputClicked() {
 			uni.navigateTo({
-				url: '../search/search',
+				url: '../search/search?type=user',
 
 			});
 		},

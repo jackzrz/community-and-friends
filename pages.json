@@ -1,5 +1,5 @@
 {
-	"pages": [ 
+	"pages": [
 		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		// {
 		//     "path" : "pages/demo/demo",
@@ -41,7 +41,6 @@
 					"titleNView": false
 				}
 			}
-
 		}, {
 			"path": "pages/msg/msg",
 			"style": {
@@ -70,10 +69,19 @@
 			}
 
 		}, {
+			
 			"path": "pages/my/my",
 			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": "我的",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"type":"menu"
+						}]
+					}
+				}
+			
+			
 			}
 
 		}
@@ -139,8 +147,6 @@
 				"app-plus": {
 					"animationType": "slide-in-left",
 					"titleNView": {
-						//dongh 
-
 						// 取消返回按钮
 						"autoBackButton": false,
 						//搜索框
@@ -170,7 +176,7 @@
 				"navigationBarTitleText": "Jack zhou",
 				// "enablePullDownRefresh": true,
 				"app-plus": {
-					"bounce":"none",
+					"bounce": "none",
 					"titleNView": {
 						"buttons": [{
 							"color": "#333333",
@@ -184,8 +190,101 @@
 				}
 			}
 
+		}, {
+			"path": "pages/detail/detail",
+			"style": {
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"type": "menu",
+							"float": "right"
+						}]
+					}
+				}
+			}
+
 		}
-	],
+	    ,{
+            "path" : "pages/user-set/user-set",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "设置"
+                // "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/user-password/user-password",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "修改密码"
+               
+            }
+            
+        }
+        ,{
+            "path" : "pages/user-email/user-email",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "绑定设置"
+               
+            }
+            
+        }
+        ,{
+            "path" : "pages/user-info/user-info",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "资料编辑"
+               
+            }
+            
+        }
+        ,{
+            "path" : "pages/user-feedback/user-feedback",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "意见反馈"
+               
+            }
+            
+        }
+        ,{
+            "path" : "pages/about/about",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "关于社区"
+
+            }
+            
+        }
+        ,{
+            "path" : "pages/login/login",
+            "style" :                                                                                    
+            {
+            
+             "app-plus": {
+             	"titleNView":false
+             }
+            }
+            
+        }
+        ,{
+            "path" : "pages/user-space/user-space",
+            "style" :                                                                                    
+            {  "navigationBarTitleText": "个人空间",
+               "app-plus": {
+               	"titleNView": {
+               		"buttons": [{
+               			"type": "menu",
+               			"float": "right"
+               		}]
+               	}
+               }
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "社区交友",

@@ -34,7 +34,7 @@
 					<hot-cate :hotCate="hotCate"></hot-cate>
 					<!-- 搜索框 -->
 					<view class="p-2">
-						<view class="bg-light py-2 rounded flex align-center justify-center text-secondary">
+						<view class="bg-light py-2 rounded flex align-center justify-center text-secondary" @click="openSearch">
 							<text class="iconfont icon-sousuo mr-2"></text>  搜索话题
 						</view>
 					</view>
@@ -244,6 +244,12 @@
 				uni.showToast({
 					title: msg + '成功'
 				})
+			},
+			
+			openSearch(){
+				uni.navigateTo({
+					url: '../search/search?type=topic',
+				});
 			}
 
 		},

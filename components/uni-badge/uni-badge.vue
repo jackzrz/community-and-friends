@@ -2,9 +2,6 @@
 	<view v-if="text"
 		:class="inverted ? 'uni-badge--' + type + ' uni-badge--' + size + ' uni-badge--' + type + '-inverted' : 'uni-badge--' + type + ' uni-badge--' + size"
 		:style="badgeStyle" class="uni-badge" @click="onClick()"><slot></slot>{{ text }}</view>
-		
-		
-
 </template>
 
 <script>

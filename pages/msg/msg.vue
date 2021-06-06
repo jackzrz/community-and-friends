@@ -111,7 +111,10 @@
 				switch (e) {
 					case 'friend':
 						console.log(e);
-
+						uni.navigateTo({
+							url: '../search/search?type=user',
+	
+						});
 						break;
 					case 'clear':
 						console.log(e);

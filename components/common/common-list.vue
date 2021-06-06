@@ -1,5 +1,5 @@
 <template>
-	<view class="p-2">
+	<view class="p-2 animated fast fadeIn">
 		<!-- 头像昵称|关注 -->
 		<view class="flex align-center justify-between">
 			<view class="flex align-center">
@@ -20,6 +20,8 @@
 		</view>
 		<!-- 标题 -->
 		<view class="my-1 font-md" @click="openDetail">{{item.title}}</view>
+		<!-- 帖子详情 -->
+		<slot></slot>
 		<!-- 图片 -->
 		<image v-if="item.titlepic" class="rounded w-100" :src="item.titlepic" style="height: 350rpx;"
 			@click="openDetail" />
@@ -41,12 +43,12 @@
 			</view>
 			
 			<view class="flex align-center justify-center flex-1 animated" hover-class="tada text-main"
-				@click="openDetail">
+				@click="doComment">
 				<text class="iconfont icon-pinglun2 mr-2"></text>
 				<text>{{item.comment_count>0?item.comment_count:"评论"}}</text>
 			</view>
 			<view class="flex align-center justify-center flex-1 animated" hover-class="tada text-main"
-				@click="openDetail">
+				@click="doShare">
 				<text class="iconfont icon-fenxiang mr-2"></text>
 				<text>{{item.share_num>0?item.share_num:"分享"}}</text>
 			</view>
@@ -54,15 +56,26 @@
 	</view>
 </template>
 
+
 <script>
 	export default {
 		props: {
 			item: Object,
-			index: Number
+			index: {
+				type:Number,
+				default:-1
+			},
+			isdetail:{
+				type:Boolean,
+				default:false
+			}
 		},
 		methods: {
 			openSpace: function() {
-				console.log('打开个人空间');
+				uni.navigateTo({
+					url: '/pages/user-space/user-space'
+
+				});
 			},
 			
 			follow: function() {
@@ -71,17 +84,41 @@
 			},
 			
 			openDetail: function() {
-				console.log('detail--');
+		
+				if(this.isdetail){
+					return;
+				}
+				uni.navigateTo({
+					url: '/pages/detail/detail?detail='+JSON.stringify(this.item),
+					success: res => {},
+					fail: () => {},
+					complete: () => {}
+				});
 			},
 			
 			//顶踩操作
 			doSupport: function(type) {
-				console.log('type1',type);
+				console.log('type',type);
 				this.$emit('doSupport',{
 					type:type,
 					index:this.index
 				})
-				console.log('type',type);
+			
+			},
+			
+			// 评论
+			doComment(){
+			if(!this.isdetail){
+				return this.openDetail()
+			}
+			this.$emit('doComment');
+			},
+			// 分享
+			doShare(){
+				if(!this.isdetail){
+					return this.openDetail()
+				}
+				this.$emit('doShare');
 			}
 
 		}
