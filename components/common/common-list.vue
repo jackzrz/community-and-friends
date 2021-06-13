@@ -11,12 +11,12 @@
 				</view>
 			</view>
 			<!-- 按钮 -->
-			<view 
-			class="flex align-center justify-center rounded bg-main text-white animated faster" hover-class="tada"
-			v-if="!item.isFollow"
-				style="width: 90rpx;height: 45rpx;" @click="follow">
+			<view class="flex align-center justify-center rounded bg-main text-white animated faster" hover-class="tada"
+				v-if="!item.isFollow" style="width: 90rpx;height: 45rpx;" @click="follow()">
 				关注
 			</view>
+
+
 		</view>
 		<!-- 标题 -->
 		<view class="my-1 font-md" @click="openDetail">{{item.title}}</view>
@@ -29,19 +29,17 @@
 		<view class="flex align-center">
 			<!-- 顶 -->
 			<view class="flex align-center justify-center flex-1 animated" hover-class="tada text-main"
-				@click="doSupport('support')" 
-				:class="item.support.type==='support'?'text-main':'' ">
+				@click="doSupport('support')" :class="item.support.type==='support'?'text-main':'' ">
 				<text class="iconfont icon-dianzan2 mr-2"></text>
 				<text>{{item.support.support_count>0?item.support.support_count:'支持'}}</text>
 			</view>
 			<!-- 踩 -->
 			<view class="flex align-center justify-center flex-1 animated" hover-class="tada text-main"
-				@click="doSupport('unsupport')"
-				:class="item.support.type==='unsupport'?'text-main':'' ">
+				@click="doSupport('unsupport')" :class="item.support.type==='unsupport'?'text-main':'' ">
 				<text class="iconfont icon-cai mr-2"></text>
 				<text>{{item.support.unsupport_count>0?item.support.unsupport_count:'反对'}}</text>
 			</view>
-			
+
 			<view class="flex align-center justify-center flex-1 animated" hover-class="tada text-main"
 				@click="doComment">
 				<text class="iconfont icon-pinglun2 mr-2"></text>
@@ -62,12 +60,12 @@
 		props: {
 			item: Object,
 			index: {
-				type:Number,
-				default:-1
+				type: Number,
+				default: -1
 			},
-			isdetail:{
-				type:Boolean,
-				default:false
+			isdetail: {
+				type: Boolean,
+				default: false
 			}
 		},
 		methods: {
@@ -77,45 +75,48 @@
 
 				});
 			},
-			
+
 			follow: function() {
-				console.log('关注');
-				this.$emit('follow',this.index);
+				this.checkAuth(() => {
+					this.$emit('follow', this.index);
+				})
 			},
-			
+
 			openDetail: function() {
-		
-				if(this.isdetail){
+
+				if (this.isdetail) {
 					return;
 				}
 				uni.navigateTo({
-					url: '/pages/detail/detail?detail='+JSON.stringify(this.item),
+					url: '/pages/detail/detail?detail=' + JSON.stringify(this.item),
 					success: res => {},
 					fail: () => {},
 					complete: () => {}
 				});
 			},
-			
+
 			//顶踩操作
 			doSupport: function(type) {
-				console.log('type',type);
-				this.$emit('doSupport',{
-					type:type,
-					index:this.index
+			    this.checkAuth(() => {
+				this.$emit('doSupport', {
+					type: type,
+					index: this.index
 				})
-			
+				})
 			},
-			
+
 			// 评论
-			doComment(){
-			if(!this.isdetail){
-				return this.openDetail()
-			}
-			this.$emit('doComment');
+			doComment() {
+				this.checkAuth(() => {
+				if (!this.isdetail) {
+					return this.openDetail()
+				}
+				this.$emit('doComment');
+				})
 			},
 			// 分享
-			doShare(){
-				if(!this.isdetail){
+			doShare() {
+				if (!this.isdetail) {
 					return this.openDetail()
 				}
 				this.$emit('doShare');

@@ -4,14 +4,15 @@
 		<scroll-view class="scroll-row" scroll-x="true" :scroll-into-view="scrollInto" style="height: 100rpx;"
 			scroll-with-animation>
 			<view v-for="(item,index) in tabBars" :class="tabIndex===index?'text-main font-lg font-weight-bold ':''"
-				:key="index" :id="'tab'+index" class="scroll-row-item px-3 py-2" @click="changeTab(index)">{{item.name}}
+				:key="index" :id="'tab'+index" class="scroll-row-item px-3 py-2" @click="changeTab(index)">
+				{{item.classname}}
 			</view>
 		</scroll-view>
+
 		<swiper :duration="150" :current="tabIndex" @change="onChangeTab" :style="'height:'+scrollH+'px'">
 			<swiper-item v-for="(item,index) in newsList" :key="index">
 				<!-- <view class="swiper-item">{{item.name}}</view> -->
 				<scroll-view scroll-y="true" :style="'height:'+scrollH+'px'" @scrolltolower="loadmore(index)">
-					
 					<!-- <view v-for="i in 100" :key="i">{{i}}</view> -->
 					<template v-if="item.list.length>0">
 						<block v-for="(item2,index2) in item.list" :key="index2">
@@ -22,13 +23,11 @@
 						<!-- 上拉加载 -->
 						<load-more :loadmore="item.loadmore"></load-more>
 					</template>
-					
+
 					<template v-else>
 						<no-thing></no-thing>
 					</template>
-					
 				</scroll-view>
-
 			</swiper-item>
 		</swiper>
 
@@ -102,52 +101,26 @@
 				scrollH: 600,
 				tabIndex: 0,
 				//顶部选项卡
-				tabBars: [{
-						name: "关注"
-					},
-					{
-						name: "推荐"
-					},
-
-					{
-						name: "体育"
-					},
-					{
-						name: "热点"
-					},
-					{
-						name: "财经"
-					},
-
-					{
-						name: "娱乐"
-					},
-					{
-						name: "军事"
-					}
-				],
-
+				tabBars: [],
 				newsList: []
 
 			}
 		},
 		//监听导航栏搜索框
-		onNavigationBarSearchInputClicked(){
+		onNavigationBarSearchInputClicked() {
 			uni.navigateTo({
-				url:'../search/search?type=post'
+				url: '../search/search?type=post'
 			})
 		},
-		
-		//
-		onNavigationBarButtonTap(){
-			
-			uni.navigateTo({
-				url:'../add-input/add-input'
+
+		onNavigationBarButtonTap() {
+			this.navigateTo({
+				url: '../add-input/add-input'
 			})
 		},
-		
+
 		onLoad() {
-		console.log(this.$C.webUrl)
+
 			uni.getSystemInfo({
 				success: res => {
 					//console.log(;
@@ -156,28 +129,56 @@
 			})
 			this.getData()
 		},
-		
+
 		methods: {
-			//
+
+
 			getData() {
-				var arr = []
-				for (let i = 0; i < this.tabBars.length; i++) {
-					let obj = {
-						//1. 上拉加载更多 2 加载中  3 没有更多了
-						loadmore: "上拉加载更多",
-						list: []
+				//获取分类
+				this.$H.get('/post/postclass').then(res => {
+					let [err, result] = res
+					this.tabBars = result.data.data;
+					// 生成列表
+					var arr = []
+					for (let i = 0; i < this.tabBars.length; i++) {
+						arr.push({
+							//1. 上拉加载更多 2 加载中  3 没有更多了
+							loadmore: "上拉加载更多",
+							list: [],
+							page: 1
+						})
+						// let obj = {
+						// 	//1. 上拉加载更多 2 加载中  3 没有更多了
+						// 	loadmore: "上拉加载更多",
+						// 	list: []
+						// }
+						// if (i < 2) {
+						// 	obj.list = demo
+						// }
 					}
-					if (i < 2) {
-						obj.list = demo
+					this.newsList = arr;
+					//获取第一个分类的数据
+					if(this.tabBars.length){
+						let id=this.tabBars[0].id
+						
+						this.$H.get('/post/postByclass/'+id+'/post/'+this.newsList[0].page).then(res2=>{
+							let [err2, result2] = res2
+							console.log(result2);
+						
+						
+						})
 					}
-					arr.push(obj)
-				}
-				this.newsList = arr;
+					
+				})
+
+				// let res= await this.$H.get('/post/postclass')
+				// let[err,result]=res
+				// console.log(result);
+
 			},
 
 			//上拉加载更多
 			loadmore(index) {
-
 				//修改当前列表加载状态
 				let item = this.newsList[index]
 				//判断是否可加载状态
@@ -206,13 +207,14 @@
 
 			},
 			follow(e) {
-				this.list[e].isFollow = true
+				//let item = this.newsList[0].list[e.index];
+				this.newsList[0].list[e].isFollow = true;
 				uni.showToast({
 					title: "关注成功"
 				})
 			},
 
-			doSupport(e) {		
+			doSupport(e) {
 				let item = this.newsList[0].list[e.index]
 				let msg = e.type === 'support' ? '顶' : '踩'
 				//未顶踩
@@ -227,9 +229,10 @@
 					item.support.unsupport_count--
 				}
 				item.support.type = e.type
+
 				uni.showToast({
 					title: msg + '成功'
-				})	
+				})
 			}
 		}
 	}
