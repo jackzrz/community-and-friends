@@ -10,7 +10,7 @@
 				<text class="font-sm mt-1 text-muted">{{item.name}}</text>
 			</view>
 		</view>
-		<view class="text-center py-2 font-md border-top bg-white" hover-class="bg-light">取消</view>
+		<view class="text-center py-2 font-md border-top bg-white" hover-class="bg-light" @click="close()">取消</view>
 	</uni-popup>
 	
 </template>
@@ -25,21 +25,22 @@
 
 		data() {
 			return {
-				title: 'share',
-				shareText: 'uni-app可以同时发布成原生App、小程序、H5，邀请你一起体验！',
-				href:"https://uniapp.dcloud.io",
+				title: '',
+				shareText: '',
+				href:"",
 				image: '',
-				shareType:1,
+				shareType:0,
 				providerList: [],
 			}
 		},
+
 
 		mounted() {
 			//console.log("ddddd---");
 			uni.getProvider({
 				service: 'share',
 				success: (e) => {
-					console.log('success', e);
+					//console.log('success', e);
 					let data = []
 					for (let i = 0; i < e.provider.length; i++) {
 						switch (e.provider[i]) {
@@ -124,7 +125,12 @@
 		},
 
 		methods: {
-			open() {
+			open(options) {
+				console.log("options",options)
+				this.title=options.title
+				this.shareText=options.shareText
+				this.href=options.href
+				this.image=options.image
 				this.$refs.popup.open()
 			},
 			close() {
@@ -133,7 +139,6 @@
 			
 			async share(e) {
 				//console.log('分享通道:'+ e.id +'； 分享类型:' + this.shareType);
-				
 				if(!this.shareText && (this.shareType === 1 || this.shareType === 0)){
 					uni.showModal({
 						content:'分享内容不能为空',
@@ -148,6 +153,10 @@
 						showCancel:false
 					})
 					return;
+				}
+			//	qq,新浪微博只能 用 文字分享
+				if(e.id=='qq'||e.id==sinaweibo){
+					this.shareType=1
 				}
 				
 				let shareOPtions = {
@@ -177,8 +186,8 @@
 					case 0:
 						shareOPtions.summary = this.shareText;
 						shareOPtions.imageUrl = this.image;
-						shareOPtions.title = '欢迎体验uniapp';
-						shareOPtions.href = 'https://uniapp.dcloud.io';
+						shareOPtions.title = this.title;
+						shareOPtions.href = this.href;
 						break;
 					case 1:
 						shareOPtions.summary = this.shareText;

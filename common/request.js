@@ -11,7 +11,32 @@ export default {
 		options.url = $C.webUrl + options.url;
 		options.method = options.method ||this.common.method
 		options.header = options.header ||this.common.header
-		return uni.request(options);
+		return new Promise((res,rej)=>{
+		uni.request({
+			...options,
+			success:(result)=>{
+				//console.log(result);
+				//失败
+				if(result.statusCode!=200){
+					uni.showToast({
+						title: result.data.message || '请求失败',
+						icon:"none"
+					});
+					return rej(result.data);
+				}
+				//成功
+				res(result.data.data)
+			},
+			fail:(error)=>{
+				uni.showToast({
+					title: error.errMsg || '请求失败',
+					icon:"none"
+				});
+				return rej();
+			}
+		});
+		});
+		
 	},
 	get(url, data = {}, options = {}) {
 		options.url = url

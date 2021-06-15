@@ -26,7 +26,7 @@ export default {
 	            name: widgetInfo.name  
 	        },  
 	        success: (result) => { 
-				console.log("update---",result)
+				//console.log("update---",result)
 	            var data = result.data;  
 	            if (data.update && data.wgtUrl) {  
 	                uni.downloadFile({  

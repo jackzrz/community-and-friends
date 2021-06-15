@@ -11,17 +11,15 @@
 			<text slot="right" class="iconfont icon-fatie_icon"></text>
 		</uni-nav-bar>
 
-
 		<swiper :duration="150" :style="'height:'+scrollH+'px'" @change="onChangeTab" :current="tabIndex">
-
 			<!-- 关注 -->
 			<swiper-item>
 				<!-- <view class="swiper-item">{{item.name}}</view> -->
 				<scroll-view scroll-y="true" :style="'height:'+scrollH+'px;'" @scrolltolower="loadmoreEvent">
-					<block v-for="(item,index) in list" :key="index">
+				<!-- 	<block v-for="(item,index) in list" :key="index">
 						<common-list :item="item" :index="index" @doSupport="doSupport"></common-list>
 						<divider></divider>
-					</block>
+					</block> -->
 					<!-- 上拉加载 -->
 					<load-more :loadmore="loadmore"></load-more>
 				</scroll-view>
@@ -40,8 +38,8 @@
 					</view>
 					<!-- 轮播图-->
 					<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" class="px-2">
-						<swiper-item>
-							<image src="../../static/demo/banner2.jpg" style="height: 300rpx;" class="w-100 rounded ">
+						<swiper-item v-for="(item,index) in swiperList" :key="index">
+							<image :src="item.src" style="height: 300rpx;" class="w-100 rounded ">
 							</image>
 						</swiper-item>
 					</swiper>
@@ -59,6 +57,7 @@
 
 	</view>
 </template>
+
 
 <script>
 	const demo = [{
@@ -134,53 +133,19 @@
 				}],
 				list: [],
 				loadmore: "上拉加载更多",
-
-				hotCate: [{
-						name: "关注"
-					}, {
-						name: "推荐"
-					}, {
-						name: "财经"
-					},
-					{
-						name: "体育"
-					}, {
-						name: "国际"
-					}
-				],
+				hotCate: [],
+				swiperList:[],
+				
 				topicList: [{
-					cover: "/static/demo/topicpic/1.jpeg",
+					titlePic: "/static/demo/topicpic/1.jpeg",
 					title: "话题名称",
-					desc: "话题描述",
-					today_count: 0,
-					news_count: 10
-				}, {
-					cover: "/static/demo/topicpic/1.jpeg",
-					title: "话题名称",
-					desc: "话题描述",
-					today_count: 0,
-					news_count: 10
-				}, {
-					cover: "/static/demo/topicpic/1.jpeg",
-					title: "话题名称",
-					desc: "话题描述",
-					today_count: 0,
-					news_count: 10
-				}, {
-					cover: "/static/demo/topicpic/1.jpeg",
-					title: "话题名称",
-					desc: "话题描述",
-					today_count: 0,
-					news_count: 10
-				}, {
-					cover: "/static/demo/topicpic/1.jpeg",
-					title: "话题名称",
-					desc: "话题描述",
+					note: "话题描述",
 					today_count: 0,
 					news_count: 10
 				}]
 			}
 		},
+		
 		onLoad() {
 			uni.getSystemInfo({
 				success: res => {
@@ -189,23 +154,48 @@
 				}
 			})
 			this.list = demo
+			this.getTopicClass();
+			this.getHotTopic();
+			this.getSwipers();
 		},
 		methods: {
+			// 获取热门分类
+			getTopicClass(){
+				   
+					this.$H.get('/sc-post/api/v1/topic/topicclass').then(res=>{
+					// console.log("topicclass",res);
+					  this.hotCate=res
+					})
+			},
+			// 获取热门话题
+			getHotTopic(){
+				this.$H.get('/sc-post/api/v1/topic/hottopic').then(res=>{
+					this.topicList=res;
+				})
+			},
+			
+			// 获取轮播图
+			getSwipers(){
+				this.$H.post('/sc-other/api/v1/other/adsense/0').then(res=>{
+					console.log(res);
+					this.swiperList=res;
+				})
+			
+			},
+			
 			//上拉加载更多
 			loadmoreEvent() {
 				//修改当前列表加载状态
-
 				//判断是否可加载状态
 				if (this.loadmore !== '上拉加载更多') return;
-
 				this.loadmore = "加载中..."
-
 				//模拟数据请求
 				setTimeout(() => {
 					this.list = [...this.list, ...this.list]
 					this.loadmore = "上拉加载更多"
 				}, 2000)
 			},
+			
 			//监听滑动
 			onChangeTab(e) {
 				console.log(e)

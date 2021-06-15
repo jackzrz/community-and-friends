@@ -9,12 +9,13 @@
 			</view>
 		</common-list>
 		<divider></divider>
-		<view class="p-2 font-md font-weight-bold">
-			最新评论3
-		</view>
+	
 
+		<view class="p-2 font-md font-weight-bold">
+			最新评论{{info.postStatisInfo.commentCount}}
+		</view>
 		<!-- <view class="uni-comment"> -->
-		<view class="px-2">
+		<view class="px-2" v-for="(item,index) in info.postComments" :key="index">
 			<view class="uni-comment-list">
 				<view class="uni-comment-face">
 					<image src="../../static/common/nothing.png" mode="widthFix"></image>
@@ -31,6 +32,8 @@
 				</view>
 			</view>
 		</view>
+		
+		
 		<!-- 占位 -->
 		<view style="height: 100rpx;"></view>
 		
@@ -55,7 +58,6 @@
 		},
 		data() {
 			return {
-				
 				info: {
 					username: "jack zhou",
 					userpic: "../../static/default.jpg",
@@ -84,6 +86,7 @@
 		},
 		onLoad(e) {
 			
+		
 			if (e.detail) {
 				this.init(JSON.parse(e.detail))
 			}
@@ -96,7 +99,13 @@
 		},
 		onNavigationBarButtonTap() {
 			//	this.$refs.popup.open()
-			this.$refs.share.open()
+			this.$refs.share.open({
+				title:this.info.title,
+				shareText:this.info.title,
+				href:"http://www.sohu.com",
+				image:this.info.titlePic,
+			}
+			)
 		},
 
 		// ?没起作用 
@@ -104,10 +113,20 @@
 			this.$refs.share.close();
 		},
 
+
 		methods: {
 			init(data) {
 				uni.setNavigationBarTitle({
 					title: data.title
+				})
+					//请求详情api todo 列表不应带images，content 等大数据
+				this.info=data
+			    this.info.content=''
+				this.info.images=[]
+				this.$H.get('/sc-post/api/v1/post/getPostById/'+this.info.id).then(res=>{
+					console.log(res);
+					this.info.content=res.content;
+					this.info.images=res.imglist;
 				})
 			},
 			// 评论
@@ -160,8 +179,6 @@
 			},
 			submit(content) {
 				console.log(content);
-		
-
 			},
 		}
 	}

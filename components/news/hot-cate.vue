@@ -7,10 +7,8 @@
 			</view>
 		</view>
 		<view class="flex align-center py-3 border-bottom px-2">
-			<view v-for="(item,index) in hotCate" :key="index" class="border rounded bg-light mx-1 px-2 animated"
-				hover-class="tada" @click="openDetail(item)">
-				{{item.name}}
-
+			<view v-for="(item,index) in hotCate" :key="index" class="border rounded bg-light px-1 mx-1 animated "
+				hover-class="tada"@click="openMore">{{item.className}}
 			</view>
 		</view>
 	</view>
@@ -27,9 +25,9 @@
 				});
 			},
 
-			openDetail(item) {
-				console.log("detail")
-			}
+			// openDetail(item) {
+			// 	console.log("detail")
+			// }
 		}
 	}
 </script>
