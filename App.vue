@@ -3,12 +3,12 @@
 		onLaunch: function() {
 			console.log('App Launch')
 			//检测更新
-		    
-			//初始化数据
-			
 			this.$U.update()
 			// 网络监听
 			this.$U.onNetWork();
+			//初始化数据
+			//初始化用户登录状态
+			this.$store.commit('initUser');
 		},
 		onShow: function() {
 			console.log('App Show')

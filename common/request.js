@@ -3,7 +3,7 @@ export default {
 	common: {
 		method: 'GET',
 		header: {
-			"content-type": "application/json"
+			'content-type': 'application/json'
 		},
 		data: {}
 	},
@@ -15,11 +15,15 @@ export default {
 		uni.request({
 			...options,
 			success:(result)=>{
+				console.log("request-rt->",result)
+				if(options.native){
+					return res(result);
+				}
 				//console.log(result);
 				//失败
-				if(result.statusCode!=200){
+				if(result.data.code!=200){
 					uni.showToast({
-						title: result.data.message || '请求失败',
+						title: result.data.message || '请求服务器失败',
 						icon:"none"
 					});
 					return rej(result.data);
@@ -33,7 +37,8 @@ export default {
 					icon:"none"
 				});
 				return rej();
-			}
+			},
+			
 		});
 		});
 		
@@ -46,6 +51,7 @@ export default {
 	},
 	
 	post(url, data = {}, options = {}) {
+	    
 		options.url = url
 		options.data = data
 		options.method = 'POST'

@@ -38,7 +38,8 @@
 		</view>
 		<view class="py-2 px-3">
 			<button class="bg-main text-white " style="border-radius: 50rpx;border: 0;" type="primary"
-				:disabled="disabled" :class="disabled?'bg-main-disabled':'bg-main'" @click="submit">登录</button>
+				:disabled="disabled" :class="disabled?'bg-main-disabled':'bg-main'" @click="submit"
+				:loading="loading">登录</button>
 		</view>
 
 		<view class="flex align-center justify-center pt-2 pb-4">
@@ -53,7 +54,7 @@
 			<view style="height: 1rpx;background-color: #dddddd;width: 100rpx;"></view>
 		</view>
 
-	<other-login></other-login>
+		<other-login></other-login>
 		<view class="flex align-center justify-center text-muted">注册即代表同意
 			<text class="text-primary">《XXX社区协议》</text>
 		</view>
@@ -64,7 +65,7 @@
 <script>
 	import otherLogin from "@/components/common/other-login.vue"
 	export default {
-		components:{
+		components: {
 			otherLogin
 		},
 		data() {
@@ -74,7 +75,8 @@
 				phone: "",
 				username: "",
 				password: "",
-				codeTime: 0
+				codeTime: 0,
+				loading: false
 			}
 		},
 
@@ -110,47 +112,112 @@
 				this.code = ''
 			},
 			// 表单验证
-			validate(){
+			validate() {
 				//手机号正则
 				// var mPattern = /^1[34578]d{9}$/; //http://caibaojian.com/regexp-example.html
-
-			// if(!mPattern.test(this.phone)){
-			// 	uni.showToast({
-			// 		title: '手机号不正确',
-			// 		icon:'none'
-			// 	});
-			// 	return false
-			// }
-			return true;
-				
+				// if(!mPattern.test(this.phone)){
+				// 	uni.showToast({
+				// 		title: '手机号不正确',
+				// 		icon:'none'
+				// 	});
+				// 	return false
+				// }
+				return true;
 			},
-			submit(){
+			submit() {
 				// 表单验证
-				if(!this.validate()){
-					return;
+				if (this.status) {
+					// 手机验证码登录
+					if (!this.validate()) return;
+					this.doLogin('/sc-member/api/v1/member/phonelogin', {
+						phone: this.phone,
+						code: this.code
+					}, {
+						header: {
+							"content-type": "application/x-www-form-urlencoded"
+						}
+					});
+				} else {
+					//账号密码登录
+					this.doLogin('/sc-member/api/v1/member/login', {
+						username: this.username,
+						password: this.password
+					}, {
+						header: {
+							"content-type": "application/x-www-form-urlencoded"
+						}
+					});
 				}
-				// 提交后端
-				// 登录成功处理
 			},
-			
+
+			doLogin(url, data, options) {
+				this.loading = true
+				// 提交后端
+				this.$H.post(url, data, options).then(res => {
+					//  修改vuex 的state
+					this.$store.commit('login', res)
+					//获取用户信息
+					this.getCurrentMember();
+					uni.navigateBack({
+						delta: 1
+					})
+					uni.showToast({
+						title: '登录成功',
+						icon: 'none'
+					});
+					this.loading = false
+				}).catch(err => {
+					console.log("登录失败" + err);
+					this.loading = false
+				})
+			},
+
+			getCurrentMember() {
+				let tokenobj = JSON.parse(uni.getStorageSync('token'))
+				this.$H.get('/sc-member/api/v1/member/getCurrentMember', {}, {
+					header: {
+						'content-type': 'application/x-www-form-urlencoded',
+						'Authorization': tokenobj.tokenHead + tokenobj.token
+					},
+				}).then(res => {
+					console.log("member--", uni.getStorageSync('member'));
+				});
+			},
+
 			getCode() {
 				//防止重复获取
 				if (this.codeTime > 0) {
 					return
 				}
-				if(!this.validate()){
+				if (!this.validate()) {
 					return;
 				}
-				// 倒计时
-				this.codeTime = 60
-				let timer = setInterval(() => {
-					if (this.codeTime >= 1) {
-						this.codeTime--
-					} else {
-						this.codeTime = 0
-						clearInterval(timer)
+
+				//请求验证码
+				this.$H.post('/sc-member/api/v1/member/sendcode', {
+					phone: this.phone,
+				}, {
+					header: {
+						"content-type": "application/x-www-form-urlencoded"
 					}
-				}, 1000)
+				}).then(res => {
+					console.log(res);
+					// 倒计时
+					// this.codeTime = 60
+					// let timer = setInterval(() => {
+					// 	if (this.codeTime >= 1) {
+					// 		this.codeTime--
+					// 	} else {
+					// 		this.codeTime = 0
+					// 		clearInterval(timer)
+					// 	}
+					// }, 1000)
+				}).catch(err => {
+
+				})
+
+
+
 			}
 		}
 	}

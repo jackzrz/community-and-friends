@@ -24,10 +24,6 @@
 					url: '../../pages/topic-nav/topic-nav'
 				});
 			},
-
-			// openDetail(item) {
-			// 	console.log("detail")
-			// }
 		}
 	}
 </script>

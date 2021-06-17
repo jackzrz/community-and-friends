@@ -131,6 +131,7 @@
 		}, {
 			"path": "pages/topic-detail/topic-detail",
 			"style": {
+				// "enablePullDownRefresh":true,
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent",
